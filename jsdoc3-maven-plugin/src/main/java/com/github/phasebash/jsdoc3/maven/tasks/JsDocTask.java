@@ -29,35 +29,54 @@ final class JsDocTask implements Task {
         final List<String> arguments = new LinkedList<String>();
 
         final String basePath = context.getJsDocDir().getAbsolutePath();
+        String basePathForwardSlash = context.getJsDocDir().toURI().normalize().getPath();
+        basePathForwardSlash = basePathForwardSlash.substring(0, basePathForwardSlash.length() - 1);
+        if (basePathForwardSlash.charAt(2) == ':') {
+        	basePathForwardSlash = basePathForwardSlash.substring(1);
+        }
         final String javaHome = System.getProperty("java.home");
         final File java = new File(javaHome, "bin" + File.separator + "java");
 
         arguments.add(java.getAbsolutePath());
         arguments.add("-classpath");
-        arguments.add(new File(basePath, "rhino/js.jar").getAbsolutePath());
+        arguments.add(new File(basePath, "rhino" + File.separator + "js.jar").getAbsolutePath());
         arguments.add("org.mozilla.javascript.tools.shell.Main");
 
         for (final String module : MODULES) {
             arguments.add("-modules");
 
-            final URI uri = URI.create(basePath + (module != null ? "/" + module : "")).normalize();
-
-            arguments.add(uri.toASCIIString());
+            File file = new File(basePath + (module != null ? "/" + module : ""));
+            final URI uri = file.toURI().normalize(); 
+            String path = uri.getPath();
+            if (path.charAt(2) == ':') {
+            	path = path.substring(3, path.length() - 1);
+            }
+            arguments.add(path);
         }
 
-        arguments.add(basePath + "/jsdoc.js");
-        arguments.add("--dirname=" + basePath + "/");
+        if (basePathForwardSlash.charAt(1) == ':') {
+        	arguments.add(basePathForwardSlash.substring(2) + "/jsdoc.js");        	
+        } 
+        else {
+        	arguments.add(basePathForwardSlash + "/jsdoc.js");
+        }
+        arguments.add("--dirname=" + basePathForwardSlash);
 
         if (context.isRecursive()) {
             arguments.add("-r");
         }
 
-        arguments.add("-d");
+        arguments.add("-d");       
         arguments.add(context.getOutputDir().getAbsolutePath());
+        
+        arguments.add("-t");
+        arguments.add(context.getTemplate().getAbsolutePath());
 
         for (final File sourceFile : context.getSourceDir()) {
             arguments.add(sourceFile.getAbsolutePath());
         }
+        
+        arguments.add(context.getSourceDirectory().getAbsolutePath());
 
         Process process;
 

@@ -6,6 +6,11 @@ package com.github.phasebash.jsdoc3.maven.tasks;
 public final class TaskException extends RuntimeException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7554260858782178675L;
+
+	/**
      * Exception with a root exception.
      *
      * @param message A message.

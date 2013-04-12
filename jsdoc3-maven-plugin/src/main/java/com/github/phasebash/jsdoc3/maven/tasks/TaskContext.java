@@ -1,9 +1,10 @@
 package com.github.phasebash.jsdoc3.maven.tasks;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Set;
 public final class TaskContext {
 
     /** the source directory where sources can be found */
-    private final Collection<File> sourceDir;
+    private final List<File> sourceDir;
 
     /** where jsdoc should be written */
     private final File outputDir;
@@ -29,6 +30,10 @@ public final class TaskContext {
     /** if we shall pass the -r flag to jsdoc. */
     private final boolean recursive;
 
+	private File sourceDirectory;
+
+	private File template;
+
     /**
      * Private constructor.
      *
@@ -39,12 +44,14 @@ public final class TaskContext {
      * @param debug     if debug mode should be used.
      * @param recursive if the jsdoc task should recursively look for jsfiles.
      */
-    TaskContext(Collection<File> sourceDir, File outputDir, File jsDocDir,
-                File tempDir, boolean debug, boolean recursive) {
+    TaskContext(List<File> sourceDir, File sourceDirectory, File outputDir, File jsDocDir,
+                File tempDir, File template, boolean debug, boolean recursive) {
         this.sourceDir = sourceDir;
+        this.sourceDirectory = sourceDirectory;
         this.jsDocDir  = jsDocDir;
         this.outputDir = outputDir;
         this.tempDir   = tempDir;
+        this.template = template;
         this.debug     = debug;
         this.recursive = recursive;
     }
@@ -81,11 +88,23 @@ public final class TaskContext {
      *
      * @return The source directory.
      */
-    public Collection<File> getSourceDir() {
+    public List<File> getSourceDir() {
         return sourceDir;
     }
 
-    /**
+    
+    
+    public File getSourceDirectory() {
+		return sourceDirectory;
+	}
+    
+    
+
+	public File getTemplate() {
+		return template;
+	}
+
+	/**
      * Debug mode?
      *
      * @return true for yes, false for no.
@@ -122,6 +141,10 @@ public final class TaskContext {
 
         private boolean recursive = false;
 
+		private File sourceDirectory;
+
+		private File template;
+
         public Builder withSourceFiles(final Collection<File> sourceFiles) {
             if (sourceFiles != null) {
                 this.sourceFiles.addAll(sourceFiles);
@@ -148,6 +171,13 @@ public final class TaskContext {
             this.recursive = recursive;
             return this;
         }
+        
+        public Builder withTemplate(final File template) {
+        	if (template != null) {
+        		this.template = template;
+        	}
+        	return this;
+        }
 
         /**
          * An optional attribute, if jsdoc should run in debug mode.
@@ -166,13 +196,24 @@ public final class TaskContext {
             }
         }
 
+        public void withSourceDirectory(File sourceDirectory) {
+        	if (sourceDirectory != null) {
+        		this.sourceDirectory = sourceDirectory;
+        	}
+        	
+    	
+        }
+        
         public TaskContext build() {
-            if (sourceFiles.size() == 0 && directoryRoots.size() == 0) {
-                throw new IllegalArgumentException("sourceFiles and/or directoryRoots are required.");
+            if (sourceDirectory == null && sourceFiles.size() == 0 && directoryRoots.size() == 0) {
+                throw new IllegalArgumentException("sourceDirectory and/or sourceFiles and/or directoryRoots are required.");
             }
 
-            final Collection<File> sourceRoots = new LinkedHashSet<File>();
-            sourceRoots.addAll(sourceFiles);
+            final List<File> sourceRoots = new ArrayList<File>();
+
+            if (sourceFiles != null) {
+            	sourceRoots.addAll(sourceFiles);
+            }
             sourceRoots.addAll(directoryRoots);
 
             if (!outputDirectory.exists()) {
@@ -187,7 +228,9 @@ public final class TaskContext {
                 throw new IllegalStateException("Temp directory must not be null.");
             }
 
-            return new TaskContext(sourceRoots, outputDirectory, jsDocDirectory, tempDirectory, debug, recursive);
+            return new TaskContext(sourceRoots, sourceDirectory, outputDirectory, jsDocDirectory, tempDirectory, template, debug, recursive);
         }
+
+
     }
 }

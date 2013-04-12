@@ -22,7 +22,7 @@
 
     <properties>
         <javaVersion>1.6</javaVersion>
-        <mavenVersion>3.0.3</mavenVersion>
+        <mavenVersion>2.2.1</mavenVersion>
         <mavenPluginToolsVersion>3.1</mavenPluginToolsVersion>
         <plexusUtilsVersion>3.0.5</plexusUtilsVersion>
         <commonsIoVersion>2.4</commonsIoVersion>
@@ -154,7 +154,7 @@
     </reporting>
 
     <modules>
-        <module>jsdoc3-maven-plugin</module>
+        <module>jsdoc3-mavenplugin</module>
         <module>jsdoc3-rhino</module>
     </modules>
 

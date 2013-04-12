@@ -25,17 +25,23 @@ public class JsDocMojo extends AbstractMojo {
     private File workingDirectory;
 
     /** the directory where source files sit */
-    @Parameter(required = true)
+    @Parameter(required = false)
     private Set<File> directoryRoots;
+    
+    @Parameter(required=false)
+    private File sourceDirectory;
 
     /** the directory where source files sit */
     @Parameter(required = false)
     private Set<File> sourceFiles;
 
+    @Parameter(required = true, defaultValue = "${project.build.directory}/jsdoc3/jsdoc/templates/default")
+    private File template;
+    
     @Parameter(required = false)
     private boolean recursive = true;
 
-    /** the output directory for jsdoc */
+    
     @Parameter(required = true, defaultValue = "${project.build.directory}/site/jsdoc")
     private File outputDirectory;
 
@@ -64,6 +70,8 @@ public class JsDocMojo extends AbstractMojo {
         builder.withOutputDirectory(outputDirectory);
         builder.withTempDirectory(workingDirectory);
         builder.withJsDocDirectory(jsDoc3Dir);
+        builder.withSourceDirectory(sourceDirectory);
+        builder.withTemplate(template);
 
         try {
             final TaskContext taskContext = builder.build();
