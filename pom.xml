@@ -154,7 +154,7 @@
     </reporting>
 
     <modules>
-        <module>jsdoc3-mavenplugin</module>
+        <module>jsdoc3-maven-plugin</module>
         <module>jsdoc3-rhino</module>
     </modules>
 
